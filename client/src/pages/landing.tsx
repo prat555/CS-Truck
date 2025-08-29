@@ -210,6 +210,16 @@ export default function Landing() {
         onUpdateQuantity={updateCartQuantity}
         total={cartTotal}
       />
+      {/* Footer */}
+      <footer className="w-full border-t border-border bg-card py-6 mt-8">
+        <div className="max-w-2xl mx-auto flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
+          <a href="/refund-policy" className="hover:underline">Refund Policy</a>
+          <a href="/contact-us" className="hover:underline">Contact Us</a>
+          <a href="/privacy-policy" className="hover:underline">Privacy Policy</a>
+          <a href="/terms-and-conditions" className="hover:underline">Terms &amp; Conditions</a>
+          <a href="/shipping-policy" className="hover:underline">Shipping Policy</a>
+        </div>
+      </footer>
     </div>
   );
 }
