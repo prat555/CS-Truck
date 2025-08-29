@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS-Truck - Fresh Food On Wheels</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)",
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "var(--background)",
+                    foreground: "var(--foreground)",
+                    card: {
+                        DEFAULT: "var(--card)",
+                        foreground: "var(--card-foreground)",
+                    },
+                    primary: {
+                        DEFAULT: "var(--primary)",
+                        foreground: "var(--primary-foreground)",
+                    },
+                    secondary: {
+                        DEFAULT: "var(--secondary)",
+                        foreground: "var(--secondary-foreground)",
+                    },
+                    muted: {
+                        DEFAULT: "var(--muted)",
+                        foreground: "var(--muted-foreground)",
+                    },
+                    accent: {
+                        DEFAULT: "var(--accent)",
+                        foreground: "var(--accent-foreground)",
+                    },
+                    border: "var(--border)",
+                    input: "var(--input)",
+                    ring: "var(--ring)",
+                },
+                fontFamily: {
+                    sans: ["Inter", "system-ui", "sans-serif"],
+                }
+            },
+        }
+    };
+    </script>
+    <style>
+        :root {
+            --background: hsl(24 10% 98%);
+            --foreground: hsl(24 20% 10%);
+            --card: hsl(24 20% 100%);
+            --card-foreground: hsl(24 20% 10%);
+            --primary: hsl(24 95% 53%);
+            --primary-foreground: hsl(0 0% 100%);
+            --secondary: hsl(30 80% 28%);
+            --secondary-foreground: hsl(24 20% 100%);
+            --muted: hsl(24 10% 95%);
+            --muted-foreground: hsl(24 10% 45%);
+            --accent: hsl(42 90% 85%);
+            --accent-foreground: hsl(24 20% 10%);
+            --border: hsl(24 20% 90%);
+            --input: hsl(24 20% 90%);
+            --ring: hsl(24 95% 53%);
+            --radius: 0.75rem;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.3s ease-in-out;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-background text-foreground min-h-screen">
+    <!-- Mobile Navigation Header -->
+    <header class="sticky top-0 bg-card border-b border-border z-40 shadow-sm">
+        <div class="flex items-center justify-between px-4 py-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                    <i class="fas fa-truck text-primary-foreground text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-foreground">CS-Truck</h1>
+                    <p class="text-xs text-muted-foreground">Fresh on Wheels</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-1 bg-accent px-2 py-1 rounded-full" data-mock="true">
+                    <i class="fas fa-star text-primary text-sm"></i>
+                    <span class="text-sm font-medium" data-bind="user.points">125</span>
+                </div>
+                <button onclick="toggleAdminPanel()" class="p-2 rounded-lg bg-muted">
+                    <i class="fas fa-cog text-muted-foreground"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Category Navigation -->
+    <nav class="bg-card border-b border-border sticky top-16 z-30">
+        <div class="overflow-x-auto">
+            <div class="flex space-x-1 px-4 py-3 min-w-max">
+                <button onclick="showCategory('all')" class="category-btn active px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium whitespace-nowrap">
+                    All Items
+                </button>
+                <button onclick="showCategory('coffee')" class="category-btn px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap">
+                    Coffee & Tea
+                </button>
+                <button onclick="showCategory('breakfast')" class="category-btn px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap">
+                    Breakfast
+                </button>
+                <button onclick="showCategory('pastries')" class="category-btn px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm font-medium whitespace-nowrap">
+                    Pastries
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Special Offers Banner -->
+    <div class="bg-gradient-to-r from-primary to-secondary text-primary-foreground p-4 m-4 rounded-xl" data-mock="true">
+        <div class="flex items-center justify-between">
+            <div>
+                <h3 class="font-semibold">Today's Special!</h3>
+                <p class="text-sm opacity-90">Buy 2 coffees, get 1 pastry free</p>
+            </div>
+            <div class="text-2xl">
+                <i class="fas fa-gift"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Grid -->
+    <main class="px-4 pb-32">
+        <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Coffee & Tea Items -->
+            <!-- @MAP: coffeeItems.map(item => ( -->
+            <div class="product-card coffee bg-card rounded-xl shadow-sm border border-border overflow-hidden fade-in" data-mock="true">
+                <!-- A steaming cup of espresso with beautiful latte art on a wooden table -->
+                <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" alt="Espresso" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-semibold text-foreground">Classic Espresso</h3>
+                        <span class="text-lg font-bold text-primary">$3.50</span>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3">Rich, bold espresso shot</p>
+                    <button onclick="addToCart('espresso', 3.50)" class="w-full bg-primary text-primary-foreground py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-card coffee bg-card rounded-xl shadow-sm border border-border overflow-hidden fade-in" data-mock="true">
+                <!-- A creamy cappuccino with foam art in a white ceramic cup -->
+                <img src="https://images.unsplash.com/photo-1572442388796-11668a67e53d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" alt="Cappuccino" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-semibold text-foreground">Cappuccino</h3>
+                        <span class="text-lg font-bold text-primary">$4.25</span>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3">Creamy espresso with steamed milk</p>
+                    <button onclick="addToCart('cappuccino', 4.25)" class="w-full bg-primary text-primary-foreground py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-card coffee bg-card rounded-xl shadow-sm border border-border overflow-hidden fade-in" data-mock="true">
+                <!-- A beautiful latte with intricate leaf pattern latte art -->
+                <img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" alt="Latte" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-semibold text-foreground">Vanilla Latte</h3>
+                        <span class="text-lg font-bold text-primary">$4.75</span>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3">Smooth latte with vanilla syrup</p>
+                    <button onclick="addToCart('latte', 4.75)" class="w-full bg-primary text-primary-foreground py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-card coffee bg-card rounded-xl shadow-sm border border-border overflow-hidden fade-in" data-mock="true">
+                <!-- A glass of iced tea with mint leaves and lemon slice on ice -->
+                <img src="https://images.unsplash.com/photo-1556679343-c7306c1976bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" alt="Iced Tea" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-semibold text-foreground">Fresh Iced Tea</h3>
+                        <span class="text-lg font-bold text-primary">$2.95</span>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3">Refreshing cold brew tea</p>
+                    <button onclick="addToCart('iced-tea', 2.95)" class="w-full bg-primary text-primary-foreground py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <!-- Breakfast Items -->
+            <div class="product-card breakfast bg-card rounded-xl shadow-sm border border-border overflow-hidden fade-in" data-mock="true">
+                <!-- A golden breakfast sandwich with egg, cheese and bacon on a toasted bun -->
+                <img src="https://images.unsplash.com/photo-1481070555726-e2fe8357725c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" alt="Breakfast Sandwich" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-semibold text-foreground">Breakfast Sandwich</h3>
+                        <span class="text-lg font-bold text-primary">$6.50</span>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3">Egg, cheese & bacon on brioche</p>
+                    <button onclick="addToCart('breakfast-sandwich', 6.50)" class="w-full bg-primary text-primary-foreground py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-card breakfast bg-card rounded-xl shadow-sm border border-border overflow-hidden fade-in" data-mock="true">
+                <!-- A stack of fluffy pancakes with syrup and butter on top -->
+                <img src="https://pixabay.com/get/gfb52014a5f0ce875b1dd72141c58c477dc333b86fa46156250238c2174d29003e8bf8e30c01086a2eaa8497985aa10a2b6e7323f162c3fc68615906b1063569e_1280.jpg" alt="Pancakes" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-semibold text-foreground">Fluffy Pancakes</h3>
+                        <span class="text-lg font-bold text-primary">$7.25</span>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3">Three pancakes with syrup</p>
+                    <button onclick="addToCart('pancakes', 7.25)" class="w-full bg-primary text-primary-foreground py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pastries -->
+            <div class="product-card pastries bg-card rounded-xl shadow-sm border border-border overflow-hidden fade-in" data-mock="true">
+                <!-- A flaky, golden croissant on a rustic wooden board -->
+                <img src="https://pixabay.com/get/g0877ffe8254c67443db88168e6265b6612a4f391d2e1476aa6618c34b6ac7b109ceb2545520a2c32fb30803c8f6570f2a15e60bd8bde03358791849da61d3709_1280.jpg" alt="Croissant" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-semibold text-foreground">Butter Croissant</h3>
+                        <span class="text-lg font-bold text-primary">$3.95</span>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3">Flaky, buttery French pastry</p>
+                    <button onclick="addToCart('croissant', 3.95)" class="w-full bg-primary text-primary-foreground py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-card pastries bg-card rounded-xl shadow-sm border border-border overflow-hidden fade-in" data-mock="true">
+                <!-- A chocolate muffin with chocolate chips on top, fresh from the oven -->
+                <img src="https://images.unsplash.com/photo-1607958996333-41aef7caefaa?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" alt="Muffin" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-semibold text-foreground">Chocolate Muffin</h3>
+                        <span class="text-lg font-bold text-primary">$4.50</span>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3">Rich chocolate chip muffin</p>
+                    <button onclick="addToCart('muffin', 4.50)" class="w-full bg-primary text-primary-foreground py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-card pastries bg-card rounded-xl shadow-sm border border-border overflow-hidden fade-in" data-mock="true">
+                <!-- A glazed donut with colorful sprinkles on a white plate -->
+                <img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" alt="Donut" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-semibold text-foreground">Glazed Donut</h3>
+                        <span class="text-lg font-bold text-primary">$2.75</span>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3">Classic glazed with sprinkles</p>
+                    <button onclick="addToCart('donut', 2.75)" class="w-full bg-primary text-primary-foreground py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-card pastries bg-card rounded-xl shadow-sm border border-border overflow-hidden fade-in" data-mock="true">
+                <!-- A slice of cinnamon roll with white icing drizzled on top -->
+                <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300" alt="Cinnamon Roll" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-semibold text-foreground">Cinnamon Roll</h3>
+                        <span class="text-lg font-bold text-primary">$4.25</span>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-3">Warm roll with cinnamon glaze</p>
+                    <button onclick="addToCart('cinnamon-roll', 4.25)" class="w-full bg-primary text-primary-foreground py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+        </div>
+    </main>
+
+    <!-- Floating Cart Button -->
+    <div class="fixed bottom-4 right-4 z-50">
+        <button onclick="openCart()" id="cart-btn" class="bg-primary text-primary-foreground rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-300 relative">
+            <i class="fas fa-shopping-cart text-xl"></i>
+            <span id="cart-count" class="absolute -top-2 -right-2 bg-secondary text-secondary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">0</span>
+        </button>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="fixed inset-0 bg-black/50 z-50 hidden">
+        <div class="fixed bottom-0 left-0 right-0 bg-card rounded-t-xl max-h-[80vh] overflow-hidden slide-up">
+            <div class="p-4 border-b border-border">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold">Your Order</h2>
+                    <button onclick="closeCart()" class="p-2 hover:bg-muted rounded-lg">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="overflow-y-auto max-h-96 p-4">
+                <div id="cart-items" class="space-y-3">
+                    <!-- Cart items will be populated here -->
+                </div>
+            </div>
+            <div class="p-4 border-t border-border bg-muted/30">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-lg font-semibold">Total:</span>
+                    <span id="cart-total" class="text-xl font-bold text-primary">$0.00</span>
+                </div>
+                <button onclick="proceedToCheckout()" class="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+                    Proceed to Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="fixed inset-0 bg-black/50 z-50 hidden">
+        <div class="fixed inset-4 bg-card rounded-xl overflow-hidden">
+            <div class="p-4 border-b border-border">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold">Checkout</h2>
+                    <button onclick="closeCheckout()" class="p-2 hover:bg-muted rounded-lg">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-4 overflow-y-auto h-full pb-20">
+                <div class="space-y-6">
+                    <!-- Order Summary -->
+                    <div class="bg-muted/50 p-4 rounded-xl">
+                        <h3 class="font-semibold mb-3">Order Summary</h3>
+                        <div id="checkout-items" class="space-y-2">
+                            <!-- Checkout items will be populated here -->
+                        </div>
+                        <div class="border-t border-border pt-3 mt-3">
+                            <div class="flex justify-between font-semibold">
+                                <span>Total:</span>
+                                <span id="checkout-total" class="text-primary">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Info -->
+                    <div class="space-y-4" data-mock="true">
+                        <h3 class="font-semibold">Customer Information</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <input type="text" placeholder="First Name" class="w-full p-3 border border-input rounded-lg bg-background">
+                            <input type="text" placeholder="Last Name" class="w-full p-3 border border-input rounded-lg bg-background">
+                        </div>
+                        <input type="email" placeholder="Email Address" class="w-full p-3 border border-input rounded-lg bg-background">
+                        <input type="tel" placeholder="Phone Number" class="w-full p-3 border border-input rounded-lg bg-background">
+                    </div>
+
+                    <!-- Payment Info -->
+                    <div class="space-y-4" data-mock="true">
+                        <h3 class="font-semibold">Payment Information</h3>
+                        <div class="bg-accent/50 p-3 rounded-lg text-sm">
+                            <i class="fas fa-info-circle text-primary mr-2"></i>
+                            This is a demo. Use card number 4242 4242 4242 4242
+                        </div>
+                        <input type="text" placeholder="Card Number" class="w-full p-3 border border-input rounded-lg bg-background">
+                        <div class="grid grid-cols-2 gap-4">
+                            <input type="text" placeholder="MM/YY" class="w-full p-3 border border-input rounded-lg bg-background">
+                            <input type="text" placeholder="CVC" class="w-full p-3 border border-input rounded-lg bg-background">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 p-4 bg-card border-t border-border">
+                <button onclick="completeOrder()" class="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+                    Complete Order
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Confirmation Modal -->
+    <div id="order-confirmation" class="fixed inset-0 bg-black/50 z-50 hidden">
+        <div class="fixed inset-4 bg-card rounded-xl flex items-center justify-center">
+            <div class="text-center p-8">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-green-600 text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-2">Order Confirmed!</h2>
+                <p class="text-muted-foreground mb-4">Your order has been placed successfully</p>
+                <div class="bg-muted p-4 rounded-lg mb-6">
+                    <p class="text-sm text-muted-foreground">Order Number</p>
+                    <p id="order-number" class="text-2xl font-bold text-primary" data-mock="true">#CS001</p>
+                </div>
+                <button onclick="closeOrderConfirmation()" class="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold">
+                    Continue Shopping
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="fixed inset-0 bg-black/50 z-50 hidden">
+        <div class="fixed inset-4 bg-card rounded-xl overflow-hidden">
+            <div class="p-4 border-b border-border">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold">Admin Panel</h2>
+                    <button onclick="toggleAdminPanel()" class="p-2 hover:bg-muted rounded-lg">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="flex h-full">
+                <!-- Sidebar -->
+                <div class="w-64 bg-muted border-r border-border p-4">
+                    <nav class="space-y-2">
+                        <button onclick="showAdminSection('orders')" class="admin-nav-btn active w-full text-left p-3 rounded-lg bg-primary text-primary-foreground font-medium">
+                            <i class="fas fa-list-ul mr-2"></i>Orders
+                        </button>
+                        <button onclick="showAdminSection('queue')" class="admin-nav-btn w-full text-left p-3 rounded-lg hover:bg-background">
+                            <i class="fas fa-clock mr-2"></i>Order Queue
+                        </button>
+                        <button onclick="showAdminSection('products')" class="admin-nav-btn w-full text-left p-3 rounded-lg hover:bg-background">
+                            <i class="fas fa-box mr-2"></i>Products
+                        </button>
+                        <button onclick="showAdminSection('offline-order')" class="admin-nav-btn w-full text-left p-3 rounded-lg hover:bg-background">
+                            <i class="fas fa-plus mr-2"></i>New Order
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Content Area -->
+                <div class="flex-1 p-4 overflow-y-auto">
+                    <!-- Orders Section -->
+                    <div id="admin-orders" class="admin-section">
+                        <h3 class="text-lg font-semibold mb-4">Recent Orders</h3>
+                        <div class="space-y-3" data-mock="true">
+                            <div class="bg-background p-4 rounded-lg border border-border">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <p class="font-semibold">#CS001</p>
+                                        <p class="text-sm text-muted-foreground">John Doe • 2 items</p>
+                                    </div>
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Completed</span>
+                                </div>
+                                <p class="text-sm">Cappuccino, Croissant</p>
+                                <p class="font-semibold text-primary">$8.20</p>
+                            </div>
+                            <div class="bg-background p-4 rounded-lg border border-border">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <p class="font-semibold">#CS002</p>
+                                        <p class="text-sm text-muted-foreground">Jane Smith • 1 item</p>
+                                    </div>
+                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">Preparing</span>
+                                </div>
+                                <p class="text-sm">Breakfast Sandwich</p>
+                                <p class="font-semibold text-primary">$6.50</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Queue Section -->
+                    <div id="admin-queue" class="admin-section hidden">
+                        <h3 class="text-lg font-semibold mb-4">Order Queue</h3>
+                        <div class="space-y-3" data-mock="true">
+                            <div class="bg-background p-4 rounded-lg border border-border border-l-4 border-l-primary">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <p class="font-semibold">#CS003</p>
+                                        <p class="text-sm text-muted-foreground">5 min ago</p>
+                                    </div>
+                                    <button class="bg-primary text-primary-foreground px-3 py-1 rounded text-sm">
+                                        Mark Ready
+                                    </button>
+                                </div>
+                                <p class="text-sm">Latte, Muffin</p>
+                                <p class="font-semibold text-primary">$9.25</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Products Section -->
+                    <div id="admin-products" class="admin-section hidden">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold">Product Management</h3>
+                            <button class="bg-primary text-primary-foreground px-4 py-2 rounded-lg">
+                                <i class="fas fa-plus mr-2"></i>Add Product
+                            </button>
+                        </div>
+                        <div class="space-y-3" data-mock="true">
+                            <div class="bg-background p-4 rounded-lg border border-border">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <p class="font-semibold">Cappuccino</p>
+                                        <p class="text-sm text-muted-foreground">Coffee & Tea</p>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="font-semibold text-primary">$4.25</span>
+                                        <button class="text-blue-600 hover:text-blue-800">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-800">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Offline Order Section -->
+                    <div id="admin-offline-order" class="admin-section hidden">
+                        <h3 class="text-lg font-semibold mb-4">Create Offline Order</h3>
+                        <div class="space-y-4" data-mock="true">
+                            <input type="text" placeholder="Customer Name" class="w-full p-3 border border-input rounded-lg bg-background">
+                            <input type="tel" placeholder="Phone Number (Optional)" class="w-full p-3 border border-input rounded-lg bg-background">
+                            <div class="border border-border rounded-lg p-4">
+                                <h4 class="font-medium mb-3">Select Items</h4>
+                                <div class="space-y-2 max-h-40 overflow-y-auto">
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" class="rounded">
+                                        <span>Cappuccino - $4.25</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" class="rounded">
+                                        <span>Croissant - $3.95</span>
+                                    </label>
+                                    <!-- More items... -->
+                                </div>
+                            </div>
+                            <button onclick="createOfflineOrder()" class="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold">
+                                Create Order
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cart management
+        let cart = [];
+        let orderCounter = 1;
+
+        function addToCart(itemId, price) {
+            const existingItem = cart.find(item => item.id === itemId);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: itemId,
+                    name: itemId.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                    price: price,
+                    quantity: 1
+                });
+            }
+            updateCartUI();
+            
+            // Show success feedback
+            showToast('Item added to cart!');
+        }
+
+        function removeFromCart(itemId) {
+            const itemIndex = cart.findIndex(item => item.id === itemId);
+            if (itemIndex > -1) {
+                if (cart[itemIndex].quantity > 1) {
+                    cart[itemIndex].quantity -= 1;
+                } else {
+                    cart.splice(itemIndex, 1);
+                }
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+            const cartTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+            
+            document.getElementById('cart-count').textContent = cartCount;
+            document.getElementById('cart-total').textContent = `$${cartTotal.toFixed(2)}`;
+            
+            const cartItems = document.getElementById('cart-items');
+            cartItems.innerHTML = '';
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p class="text-center text-muted-foreground py-8">Your cart is empty</p>';
+            } else {
+                cart.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'flex justify-between items-center py-3 border-b border-border last:border-b-0';
+                    itemElement.innerHTML = `
+                        <div>
+                            <h4 class="font-medium">${item.name}</h4>
+                            <p class="text-sm text-muted-foreground">$${item.price.toFixed(2)} each</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button onclick="removeFromCart('${item.id}')" class="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                                <i class="fas fa-minus text-xs"></i>
+                            </button>
+                            <span class="font-medium">${item.quantity}</span>
+                            <button onclick="addToCart('${item.id}', ${item.price})" class="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+                                <i class="fas fa-plus text-xs"></i>
+                            </button>
+                        </div>
+                    `;
+                    cartItems.appendChild(itemElement);
+                });
+            }
+        }
+
+        function openCart() {
+            document.getElementById('cart-modal').classList.remove('hidden');
+        }
+
+        function closeCart() {
+            document.getElementById('cart-modal').classList.add('hidden');
+        }
+
+        function proceedToCheckout() {
+            if (cart.length === 0) {
+                showToast('Your cart is empty!');
+                return;
+            }
+            
+            closeCart();
+            document.getElementById('checkout-modal').classList.remove('hidden');
+            
+            // Update checkout summary
+            const checkoutItems = document.getElementById('checkout-items');
+            const checkoutTotal = document.getElementById('checkout-total');
+            
+            checkoutItems.innerHTML = '';
+            let total = 0;
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = 'flex justify-between';
+                itemElement.innerHTML = `
+                    <span>${item.name} x${item.quantity}</span>
+                    <span>$${itemTotal.toFixed(2)}</span>
+                `;
+                checkoutItems.appendChild(itemElement);
+            });
+            
+            checkoutTotal.textContent = `$${total.toFixed(2)}`;
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkout-modal').classList.add('hidden');
+        }
+
+        function completeOrder() {
+            // TODO: Implement real payment processing and order creation
+            const orderNumber = `CS${String(orderCounter++).padStart(3, '0')}`;
+            document.getElementById('order-number').textContent = `#${orderNumber}`;
+            
+            // Clear cart
+            cart = [];
+            updateCartUI();
+            
+            // Close checkout and show confirmation
+            closeCheckout();
+            document.getElementById('order-confirmation').classList.remove('hidden');
+            
+            // Add points (1 point per dollar)
+            const total = parseFloat(document.getElementById('checkout-total').textContent.replace('$', ''));
+            // TODO: Add points to user account
+            
+            showToast('Order placed successfully!');
+        }
+
+        function closeOrderConfirmation() {
+            document.getElementById('order-confirmation').classList.add('hidden');
+        }
+
+        // Category filtering
+        function showCategory(category) {
+            const products = document.querySelectorAll('.product-card');
+            const buttons = document.querySelectorAll('.category-btn');
+            
+            // Update button states
+            buttons.forEach(btn => {
+                btn.classList.remove('active', 'bg-primary', 'text-primary-foreground');
+                btn.classList.add('bg-muted', 'text-muted-foreground');
+            });
+            
+            event.target.classList.remove('bg-muted', 'text-muted-foreground');
+            event.target.classList.add('active', 'bg-primary', 'text-primary-foreground');
+            
+            // Filter products
+            products.forEach(product => {
+                if (category === 'all' || product.classList.contains(category)) {
+                    product.style.display = 'block';
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+        }
+
+        // Admin panel functionality
+        function toggleAdminPanel() {
+            const panel = document.getElementById('admin-panel');
+            panel.classList.toggle('hidden');
+        }
+
+        function showAdminSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
+            
+            // Show selected section
+            document.getElementById(`admin-${section}`).classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('.admin-nav-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-primary', 'text-primary-foreground');
+                btn.classList.add('hover:bg-background');
+            });
+            
+            event.target.classList.remove('hover:bg-background');
+            event.target.classList.add('active', 'bg-primary', 'text-primary-foreground');
+        }
+
+        function createOfflineOrder() {
+            // TODO: Implement offline order creation
+            const orderNumber = `CS${String(orderCounter++).padStart(3, '0')}`;
+            showToast(`Offline order #${orderNumber} created!`);
+        }
+
+        // Utility functions
+        function showToast(message) {
+            // Simple toast notification
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg z-50';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Initialize cart UI
+        updateCartUI();
+    </script>
+</body>
+</html>

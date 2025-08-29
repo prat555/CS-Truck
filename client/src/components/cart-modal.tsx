@@ -33,17 +33,7 @@ export default function CartModal({ isOpen, onClose, cart, onUpdateQuantity, tot
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
-            <span data-testid="text-cart-title">Your Order</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              data-testid="button-close-cart"
-            >
-              <X className="w-4 h-4" />
-            </Button>
-          </DialogTitle>
+          <DialogTitle data-testid="text-cart-title">Your Order</DialogTitle>
         </DialogHeader>
 
         <div className="max-h-96 overflow-y-auto">
