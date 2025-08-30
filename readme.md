@@ -111,50 +111,6 @@ Preferred communication style: Simple, everyday language.
 - **Cross-env**: Cross-platform environment variable management
 - **Drizzle Kit**: Database migration and schema management
 
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js 18+
-- PostgreSQL database (Neon recommended)
-- Firebase project with Authentication enabled
-- Razorpay account for payments
-
-### Installation
-```bash
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env
-# Configure your database, Firebase, and Razorpay credentials
-
-# Push database schema
-npm run db:push
-
-# Start development server
-npm run dev
-```
-
-### Environment Variables
-```env
-# Database
-DATABASE_URL=your_neon_database_url
-
-# Payment Processing
-RAZORPAY_KEY_ID=your_razorpay_key_id
-RAZORPAY_KEY_SECRET=your_razorpay_key_secret
-STRIPE_SECRET_KEY=your_stripe_secret_key
-STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
-
-# Session
-SESSION_SECRET=your_session_secret
-
-# Firebase (configured in client/src/lib/firebase.ts)
-FIREBASE_API_KEY=your_firebase_api_key
-FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
-FIREBASE_PROJECT_ID=your_firebase_project_id
-```
-
 ## 📁 Project Structure
 
 ```
@@ -188,48 +144,6 @@ TruckSnacks/
 │   └── schema.ts         # Shared database schema and types
 └── package.json          # Dependencies and scripts
 ```
-
-## 🎯 Key Features in Detail
-
-### Firebase Authentication
-- **Google OAuth**: One-click sign-in with Google accounts
-- **Email Magic Links**: Passwordless authentication via email
-- **Phone OTP**: SMS-based verification with reCAPTCHA protection
-- **Multi-Auth Hook**: Unified authentication interface across all methods
-
-### Razorpay Payment Integration
-- **Indian Market Focus**: INR currency support with local payment methods
-- **Secure Processing**: Server-side order creation with client confirmation
-- **Order Tracking**: Automatic order generation with unique order numbers
-
-### Rewards System
-- **Points Program**: Earn 1 point per ₹10 spent
-- **Point Redemption**: 10 points = ₹1 discount
-- **User Dashboard**: Track points and spending history
-
-### Real-time Features
-- **Order Status Updates**: Live tracking from order to pickup
-- **Admin Dashboard**: Real-time order management interface
-- **WebSocket Integration**: Instant notifications and updates
-
-## 🛠️ Development Scripts
-
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run check        # TypeScript type checking
-npm run db:push      # Push database schema changes
-```
-
-## 🚀 Deployment
-
-The application is configured for deployment on:
-- **Vercel**: Frontend deployment with serverless functions
-- **Railway**: Full-stack deployment with PostgreSQL
-- **Render**: Simple deployment with database integration
-- **Neon**: Serverless PostgreSQL hosting
-
 ## 📄 License
 
 This project is licensed under the MIT License.
