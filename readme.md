@@ -4,10 +4,6 @@
 
 A modern full-stack food truck ordering application that allows customers to browse coffee, breakfast items, and pastries, place orders through Razorpay payments, and provides an admin interface for order management. The application features a React frontend with TypeScript, Express backend, Neon PostgreSQL database with Drizzle ORM, and Firebase authentication with multiple sign-in options.
 
-## User Preferences
-
-Preferred communication style: Simple, everyday language.
-
 ## 🚀 Key Features
 
 ### Customer Experience
