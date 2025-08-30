@@ -1,20 +1,24 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertOrderSchema, insertOrderItemSchema, insertProductSchema } from "@shared/schema";
+import { sendOrderConfirmationEmail } from "./emailService";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
-  await setupAuth(app);
+  // No authentication middleware
 
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  // Auth routes (now just dummy endpoints)
+  app.get('/api/auth/user', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
+      // Return a mock user since we removed authentication
+      const mockUser = {
+        id: 'mock-user-id',
+        firstName: 'Local',
+        lastName: 'User',
+        points: 0
+      };
+      res.json(mockUser);
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
@@ -53,7 +57,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/products', isAuthenticated, async (req, res) => {
+  app.post('/api/products', async (req, res) => {
     try {
       const productData = insertProductSchema.parse(req.body);
       const product = await storage.createProduct(productData);
@@ -64,7 +68,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/products/:id', isAuthenticated, async (req, res) => {
+  app.put('/api/products/:id', async (req, res) => {
     try {
       const productData = insertProductSchema.partial().parse(req.body);
       const product = await storage.updateProduct(req.params.id, productData);
@@ -78,7 +82,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/products/:id', isAuthenticated, async (req, res) => {
+  app.delete('/api/products/:id', async (req, res) => {
     try {
       const success = await storage.deleteProduct(req.params.id);
       if (!success) {
@@ -92,9 +96,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Order routes
-  app.get('/api/orders', isAuthenticated, async (req: any, res) => {
+  app.get('/api/orders', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      // Since we removed auth, return all orders or use a mock user ID
+      const userId = 'mock-user-id';
       const orders = await storage.getUserOrders(userId);
       res.json(orders);
     } catch (error) {
@@ -129,7 +134,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/orders/:id/status', isAuthenticated, async (req, res) => {
+  app.put('/api/orders/:id/status', async (req, res) => {
     try {
       const { status } = req.body;
       const order = await storage.updateOrderStatus(req.params.id, status);
@@ -144,7 +149,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin routes
-  app.get('/api/admin/orders', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/orders', async (req, res) => {
     try {
       const { limit } = req.query;
       const orders = await storage.getOrders(limit ? parseInt(limit as string) : undefined);
@@ -155,7 +160,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/admin/orders/pending', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/orders/pending', async (req, res) => {
     try {
       const orders = await storage.getPendingOrders();
       res.json(orders);
@@ -165,25 +170,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/admin/orders/offline', isAuthenticated, async (req, res) => {
+  app.post('/api/admin/orders/offline', async (req, res) => {
     try {
-      const { customerName, customerPhone, items } = req.body;
-      
+      const { customerName, customerPhone, customerEmail, items } = req.body;
       // Validate items
       const orderItemsSchema = z.array(z.object({
         productId: z.string(),
         quantity: z.number().positive(),
         price: z.number().positive(),
+        name: z.string().optional(),
       }));
-      
       const validatedItems = orderItemsSchema.parse(items);
-      
       // Calculate total
       const total = validatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      
       // Generate order number
       const orderNumber = await storage.generateOrderNumber();
-      
       // Create order
       const orderData = {
         orderNumber,
@@ -194,9 +195,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isOffline: true,
         pointsEarned: Math.floor(total), // 1 point per dollar
       };
-      
       const order = await storage.createOrder(orderData);
-      
       // Create order items
       for (const item of validatedItems) {
         await storage.createOrderItem({
@@ -206,8 +205,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
           price: item.price.toString(),
         });
       }
-      
       const fullOrder = await storage.getOrder(order.id);
+
+      // Send order confirmation email if email provided
+      if (customerEmail) {
+        await sendOrderConfirmationEmail({
+          orderNumber,
+          customerName,
+          customerEmail,
+          items: validatedItems.map(item => ({
+            name: item.name || item.productId,
+            quantity: item.quantity,
+            price: item.price
+          })),
+          total,
+          pointsEarned: Math.floor(total),
+        });
+      }
+
       res.status(201).json(fullOrder);
     } catch (error) {
       console.error("Error creating offline order:", error);
@@ -222,6 +237,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/confirm-order", async (req: any, res) => {
     res.status(501).json({ message: "Payment integration temporarily disabled" });
+  });
+
+  // Email confirmation endpoint
+  app.post("/api/send-order-email", async (req, res) => {
+    try {
+      const emailData = req.body;
+      const success = await sendOrderConfirmationEmail(emailData);
+      res.json({ success, message: success ? "Email sent successfully" : "Email service not configured - check console" });
+    } catch (error) {
+      console.error("Error sending order email:", error);
+      res.status(500).json({ success: false, message: "Failed to send email", error: (error as Error).message });
+    }
   });
 
   const httpServer = createServer(app);

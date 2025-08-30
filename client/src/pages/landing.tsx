@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Truck, Star, Coffee, Users, Clock } from "lucide-react";
 import ProductCard from "@/components/product-card";
 import CartModal from "@/components/cart-modal";
+import LoginModal from "@/components/login-modal";
 import { PRODUCT_CATEGORIES, type ProductCategory } from "@/lib/constants";
 import type { Product } from "@shared/schema";
 
@@ -20,6 +21,7 @@ export default function Landing() {
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory>(PRODUCT_CATEGORIES.ALL);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const { data: products = [], isLoading } = useQuery<Product[]>({
     queryKey: ['/api/products', selectedCategory],
@@ -38,7 +40,7 @@ export default function Landing() {
       return [...prev, {
         id: product.id,
         name: product.name,
-        price: parseFloat(product.price),
+        price: typeof product.price === 'string' ? parseFloat(product.price) : product.price,
         quantity: 1,
       }];
     });
@@ -82,7 +84,7 @@ export default function Landing() {
           </div>
           <div className="flex items-center space-x-3">
             <Button
-              onClick={() => window.location.href = '/api/login'}
+              onClick={() => setShowLoginModal(true)}
               variant="outline"
               size="sm"
               data-testid="button-login"
@@ -190,7 +192,7 @@ export default function Landing() {
           >
             <div className="flex items-center space-x-2">
               <span className="text-xl">🛒</span>
-              <span className="font-semibold">${cartTotal.toFixed(2)}</span>
+              <span className="font-semibold">₹{cartTotal.toFixed(2)}</span>
             </div>
             <Badge
               className="absolute -top-2 -right-2 bg-secondary text-secondary-foreground"
@@ -210,14 +212,25 @@ export default function Landing() {
         onUpdateQuantity={updateCartQuantity}
         total={cartTotal}
       />
+
+      {/* Login Modal */}
+      <LoginModal
+        open={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
+
       {/* Footer */}
       <footer className="w-full border-t border-border bg-card py-6 mt-8">
         <div className="max-w-2xl mx-auto flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
-          <a href="/refund-policy" className="hover:underline">Refund Policy</a>
-          <a href="/contact-us" className="hover:underline">Contact Us</a>
-          <a href="/privacy-policy" className="hover:underline">Privacy Policy</a>
-          <a href="/terms-and-conditions" className="hover:underline">Terms &amp; Conditions</a>
-          <a href="/shipping-policy" className="hover:underline">Shipping Policy</a>
+          <a href="#" className="hover:underline">About Us</a>
+          <a href="#" className="hover:underline">Contact Us</a>
+          <a href="#" className="hover:underline">Privacy Policy</a>
+          <a href="#" className="hover:underline">Terms & Conditions</a>
+          <a href="#" className="hover:underline">Refund Policy</a>
+          <a href="#" className="hover:underline">Shipping Policy</a>
+        </div>
+        <div className="text-center mt-4 text-xs text-muted-foreground">
+          © 2024 CS-Truck. All rights reserved.
         </div>
       </footer>
     </div>

@@ -10,9 +10,9 @@ import {
   User
 } from "firebase/auth";
 
-export function useAuth() {
+export function useMultiAuth() {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Start with true for initial load
   const [error, setError] = useState("");
   const [emailSent, setEmailSent] = useState(false);
 
@@ -20,7 +20,7 @@ export function useAuth() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
-      setIsLoading(false);
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -28,73 +28,75 @@ export function useAuth() {
 
   // Google login
   const loginWithGoogle = async () => {
-    setIsLoading(true);
+    setLoading(true);
     setError("");
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      setIsLoading(false);
+      // User state will be updated by onAuthStateChanged
+      setLoading(false);
       return true;
     } catch (err) {
       setError((err as Error).message);
-      setIsLoading(false);
+      setLoading(false);
       return false;
     }
   };
 
   // Passwordless email link
   const sendMagicLink = async (email: string) => {
-    setIsLoading(true);
+    setLoading(true);
     setError("");
     try {
       await sendSignInLinkToEmail(auth, email, {
-        url: window.location.origin,
+        url: window.location.origin + "/login",
         handleCodeInApp: true,
       });
       setEmailSent(true);
-      setIsLoading(false);
+      setLoading(false);
       window.localStorage.setItem("emailForSignIn", email);
       return true;
     } catch (err) {
       setError((err as Error).message);
-      setIsLoading(false);
+      setLoading(false);
       return false;
     }
   };
 
   // Complete sign-in with email link
   const completeEmailLinkSignIn = async () => {
-    setIsLoading(true);
+    setLoading(true);
     setError("");
     try {
       if (isSignInWithEmailLink(auth, window.location.href)) {
         let email = window.localStorage.getItem("emailForSignIn") || "";
         if (!email) {
+          // Ask user for email if not available
           email = window.prompt("Please provide your email for confirmation") || "";
         }
         const result = await signInWithEmailLink(auth, email, window.location.href);
-        setIsLoading(false);
+        // User state will be updated by onAuthStateChanged
+        setLoading(false);
         window.localStorage.removeItem("emailForSignIn");
         return true;
       }
-      setIsLoading(false);
+      setLoading(false);
       return false;
     } catch (err) {
       setError((err as Error).message);
-      setIsLoading(false);
+      setLoading(false);
       return false;
     }
   };
 
   const logout = async () => {
     await auth.signOut();
+    // User state will be updated by onAuthStateChanged
   };
 
   return {
     user,
-    isLoading,
-    isAuthenticated: !!user,
-    loading: isLoading, // Alias for compatibility
+    loading,
     error,
     emailSent,
     loginWithGoogle,

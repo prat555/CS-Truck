@@ -288,7 +288,7 @@ export default function Admin() {
                           {order.orderItems.map((item: any) => item.product.name).join(', ')}
                         </div>
                         <div className="flex justify-between items-center">
-                          <p className="font-semibold text-primary">${order.total}</p>
+                          <p className="font-semibold text-primary">₹{order.total}</p>
                           <p className="text-xs text-muted-foreground">
                             {new Date(order.createdAt || new Date()).toLocaleString()}
                           </p>
@@ -343,7 +343,7 @@ export default function Admin() {
                         <div className="text-sm text-muted-foreground mb-2">
                           {order.orderItems.map((item) => `${item.product.name} x${item.quantity}`).join(', ')}
                         </div>
-                        <p className="font-semibold text-primary">${order.total}</p>
+                        <p className="font-semibold text-primary">₹{order.total}</p>
                       </div>
                     ))}
                   </div>
@@ -384,7 +384,7 @@ export default function Admin() {
                           <p className="text-sm text-muted-foreground capitalize">{product.category}</p>
                         </div>
                         <div className="flex items-center space-x-4">
-                          <span className="font-semibold text-primary">${product.price}</span>
+                          <span className="font-semibold text-primary">₹{product.price}</span>
                           <div className="flex items-center space-x-2">
                             <Button size="sm" variant="outline" data-testid={`button-edit-${product.id}`}>
                               <Edit className="w-4 h-4" />
@@ -496,7 +496,7 @@ function OfflineOrderForm({ products, onSubmit, isSubmitting }: OfflineOrderForm
             <div className="border border-border rounded-lg p-4 max-h-60 overflow-y-auto space-y-2">
               {products.map((product) => (
                 <div key={product.id} className="flex items-center justify-between">
-                  <span className="text-sm">{product.name} - ${product.price}</span>
+                  <span className="text-sm">{product.name} - ₹{product.price}</span>
                   <div className="flex items-center space-x-2">
                     <Button
                       type="button"
@@ -539,7 +539,7 @@ function OfflineOrderForm({ products, onSubmit, isSubmitting }: OfflineOrderForm
             <div className="border-t pt-4">
               <div className="flex justify-between items-center font-semibold">
                 <span>Total:</span>
-                <span className="text-primary" data-testid="text-offline-order-total">${total.toFixed(2)}</span>
+                <span className="text-primary" data-testid="text-offline-order-total">₹{total.toFixed(2)}</span>
               </div>
             </div>
           )}

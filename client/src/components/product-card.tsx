@@ -22,7 +22,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             {product.name}
           </h3>
           <span className="text-lg font-bold text-primary" data-testid={`text-product-price-${product.id}`}>
-            ${product.price}
+            ₹{product.price}
           </span>
         </div>
         <p className="text-sm text-muted-foreground mb-3" data-testid={`text-product-description-${product.id}`}>

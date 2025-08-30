@@ -11,20 +11,31 @@ import Admin from "@/pages/admin";
 import NotFound from "@/pages/not-found";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  // Show loading spinner while checking auth state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   return (
     <Switch>
-      {isLoading || !isAuthenticated ? (
-        <>
-          <Route path="/" component={Landing} />
-          <Route path="/checkout" component={Checkout} />
-        </>
-      ) : (
+      {user ? (
+        // Authenticated routes
         <>
           <Route path="/" component={Home} />
           <Route path="/checkout" component={Checkout} />
           <Route path="/admin" component={Admin} />
+        </>
+      ) : (
+        // Non-authenticated routes
+        <>
+          <Route path="/" component={Landing} />
+          <Route path="/checkout" component={Checkout} />
         </>
       )}
       <Route component={NotFound} />

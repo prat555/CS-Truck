@@ -113,10 +113,9 @@ export default function Home() {
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-1 bg-accent px-3 py-2 rounded-full" title="10 points = ₹1 | Earn 1 point per ₹10 spent">
+              <div className="flex items-center space-x-1 bg-accent px-2 py-1 rounded-full">
                 <Star className="text-primary text-sm w-4 h-4" />
                 <span className="text-sm font-medium" data-testid="text-user-points">{userProfile?.points || 0}</span>
-                <span className="text-xs text-muted-foreground">pts</span>
               </div>
               <Button
                 onClick={() => setShowOrderHistory(true)}
@@ -180,23 +179,10 @@ export default function Home() {
                 <span>Quick Service</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Star className="w-4 h-4" />
-                <span>Earn 1 Point per ₹10</span>
-              </div>
-              <div className="flex items-center space-x-2">
                 <Users className="w-4 h-4" />
                 <span>Family Owned</span>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Points Info Banner */}
-        <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-foreground p-3 m-4 rounded-xl border border-green-500/30">
-          <div className="text-center">
-            <p className="text-sm font-medium">
-              💰 Rewards Program: Earn 1 point for every ₹10 spent
-            </p>
           </div>
         </div>
 
@@ -257,7 +243,7 @@ export default function Home() {
             >
               <div className="flex items-center space-x-2">
                 <span className="text-xl">🛒</span>
-                <span className="font-semibold">₹{cartTotal.toFixed(2)}</span>
+                <span className="font-semibold">${cartTotal.toFixed(2)}</span>
               </div>
               <Badge
                 className="absolute -top-2 -right-2 bg-secondary text-secondary-foreground"
@@ -277,21 +263,6 @@ export default function Home() {
           onUpdateQuantity={updateCartQuantity}
           total={cartTotal}
         />
-
-        {/* Footer */}
-        <footer className="w-full border-t border-border bg-card py-6 mt-8">
-          <div className="max-w-2xl mx-auto flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
-            <a href="#" className="hover:underline">About Us</a>
-            <a href="#" className="hover:underline">Contact Us</a>
-            <a href="#" className="hover:underline">Privacy Policy</a>
-            <a href="#" className="hover:underline">Terms & Conditions</a>
-            <a href="#" className="hover:underline">Refund Policy</a>
-            <a href="#" className="hover:underline">Shipping Policy</a>
-          </div>
-          <div className="text-center mt-4 text-xs text-muted-foreground">
-            © 2024 CS-Truck. All rights reserved.
-          </div>
-        </footer>
       </div>
     </>
   );

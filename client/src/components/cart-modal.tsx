@@ -47,7 +47,7 @@ export default function CartModal({ isOpen, onClose, cart, onUpdateQuantity, tot
                 <div key={item.id} className="flex justify-between items-center py-3 border-b border-border last:border-b-0" data-testid={`cart-item-${item.id}`}>
                   <div>
                     <h4 className="font-medium" data-testid={`text-cart-item-name-${item.id}`}>{item.name}</h4>
-                    <p className="text-sm text-muted-foreground">${item.price.toFixed(2)} each</p>
+                    <p className="text-sm text-muted-foreground">₹{item.price.toFixed(2)} each</p>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Button
@@ -84,7 +84,7 @@ export default function CartModal({ isOpen, onClose, cart, onUpdateQuantity, tot
             <div className="space-y-4">
               <div className="flex justify-between items-center font-bold text-lg">
                 <span>Total:</span>
-                <span className="text-primary" data-testid="text-cart-total">${total.toFixed(2)}</span>
+                <span className="text-primary" data-testid="text-cart-total">₹{total.toFixed(2)}</span>
               </div>
               <Button
                 onClick={handleCheckout}
