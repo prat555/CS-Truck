@@ -140,10 +140,7 @@ TruckSnacks/
 │   └── schema.ts         # Shared database schema and types
 └── package.json          # Dependencies and scripts
 ```
+
 ## 📄 License
 
-This project is licensed under the MIT License.
-
----
-
-*Built with ❤️ for the CS-Truck food truck community*
+This project is licensed under the [MIT License](LICENSE).
